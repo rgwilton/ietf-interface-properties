@@ -1,0 +1,185 @@
+# -*- org -*-
+
+
+This document specifies a better way to restrict interface YANG schema
+nodes to only those types of interfaces that the nodes are applicable
+to.
+
+* Introduction
+
+This document introduces the concept of generic interface property
+identities in YANG ^RFC7950^ data models to solve the problem of how
+to restrict interface configuration and state schema nodes to the
+appropriate types of interfaces.  E.g., it is desirable to restrict
+MAC address configuration and state schema nodes to only those types
+of interfaces that use Ethernet framing, and hence for which MAC
+address configuration may be applicable.  This document defines a set
+of common interface property YANG identities (e.g., Ethernet-like),
+and proposes that the iana-interface-type identities in
+iana-if-type.yang are updated to also derive from the interface
+property identities (a backwards compatible change).  Interface based
+YANG schema nodes can then be made conditional on the interface
+property identities rather than being conditional on a hardcoded set
+of IANA interface types.  This approach also allows newly defined
+interfaces types to reuse published standard interface YANG schema
+nodes just by deriving from the appropriate interface property
+identities, and without requiring new revisions of those published
+standard YANG modules each time a new IANA interface type is defined.
+
+* Terminology
+
+This document defines the following terms:
+
+- interface property identity: A YANG identity that defines a
+  particular generic interface related property that generally relates
+  to multiple interface types identities defined in
+  iana-interface-type.yang.  An example of such a property is
+  'Ethernet-like'.
+
+* Problem Definition
+
+The YANG language offers the "when" statement that can be used to make
+nodes conditional on some particular condition.
+
+In the case, of interface related configuration, the when statement
+can be used to explicitly list all the iana-interface-type
+identities that an interface's 'type' leaf may take.
+
+However, the current solution is not ideal for several reasons:
+
+- Explicitly listing the interface types is somewhat unwieldy,
+  particularly in the case that a schema node may apply to many
+  interfaces.  When faced with this scenario, YANG model authors
+  sometimes decide that it is better to keep the model simple and just
+  allow the schema node to be used regardless of interface type.
+
+- Explicly listing the inteface types has the further problem that the
+  model cannot easily be extended to handle new interface types.  If a
+  new interface type is introduced then to reuse the same interface
+  related schema nodes requires that all of the applicable model when
+  statements must be updated to reference the new IANA interfae type
+  identity.
+
+- The current solution doesn't really work for any bespoke vendor
+  specific interface types.  Even though the proprietrary interface
+  types may be defined in the IANA interface type identity list, it is
+  unlikely that it would be acceptable to update a standards based
+  YANG model to reference a proprietrary interface type.  Requiring
+  bespoke interfaces to use separate simiilar leaves makes the models
+  less generic and more tedious to use by clients.
+
+* Interface Property Identities
+
+This draft introduces "Interface Property Identities".  These are a
+set of YANG identities that describe properties that could be
+associated with multiple different types of interface.
+
+The existing IANA interface type identities are then selectively
+updated to also derive from one or more of these interface property
+identities.  The YANG module upgrade rules in ^RFC7950^ allow for the
+interface type identities to derive from additional identities in a
+fully backwards compatible way.
+
+YANG modules that define interface specific nodes can then use the
+YANG 1.1 derived-from() macro in the 'when' statement xpath expression
+to indicate that the node applies to all interfaces that inherit from
+the specified interface property.
+
+As new IANA interface types are defined they can derive from the
+interface property identities and hence acquire the interface specific
+YANG nodes that have been defined in existing YANG modules without
+requiring any changes beyond the device updating to use the latest
+iana-if-types YANG file.
+
+Similarly, vendor specific interface types can also inherit from the
+interface property identities and also acquire access to the
+appropriate interface configuration nodes.
+
+As required, new interface property identities can also be defined,
+again in a backwards compatible way.
+
+* Potential issues and considerations:
+
+- Would IANA be willing to manage the new interface property types,
+  and allow the interface types to be extended?
+
+- iana-interface-types.yang would need to be YANG 1.1.  Would this
+  be an issue?
+
+- Need to define a suitable set of base interface properties.
+
+- Need to then apply the set of base interface properties to
+  appropriate interface types.  Coordination between vendors will
+  likely be required to get a reasonable coverage.
+
+* YANG Modules @yang-module@
+
+!! include-figure iana-if-property-type.yang extract-to="iana-if-property-type@2017-06-27.yang"
+
+* IANA Considerations @iana-con@
+
+This draft proposes that IANA also manage a new registry of "interface
+ properties" alongside the existing "interface type" registry, and to
+ extend the "interface type" registry to also derive from interface
+ properties identities.
+
+* Security Considerations @sec-con@
+This document discusses an approach how to structure interface
+related YANG schema.  It has no security impact on the Internet.
+
+* Acknowledgments
+
+This document arose from discussions with Martin Bjorklund, Ladislav
+Lhotka, and Vladimir Vassilev on the Netmod WG alias.
+
+*! start-appendix
+
+* Examples of possible updates to iana-if-types.yang
+
+The example-iana-if-type.yang module illustrates the type of updates
+that would be made to iana-if-types.yang to make use of interface
+properties.
+
+!! include-figure example-iana-if-type.yang extract-to="example-iana-if-type@2017-06-27.yang"
+
+* Example of interface properties usage in ietf-interfaces-common.yang
+
+The ietf-interfaces-common module defines various interface
+configuration nodes that are applicable to different types of
+interfaces and hence would benefit from interface properties.
+
+!! include-figure example-ietf-interfaces-common.yang extract-to="example-ietf-interfaces-common@2017-06-27.yang"
+
+* Example of interface properties usage in ietf-interfaces-ethernet-like.yang
+
+The ietf-interfaces-ethernet-like module defines various interface
+configuration nodes that are applicable to any interfaces that have
+"Ethernet-like" semantics, and hence would benefit from interface
+properties.
+
+!! include-figure example-ietf-interfaces-ethernet-like.yang extract-to="example-ietf-interfaces-ethernet-like@2017-06-27.yang"
+
+* Example of interface properties usage in ietf-interfaces.yang
+
+Here is an example of how the ietf-interfaces.yang module could have
+used interface properties to restrict multicast packet statistics to
+only those interfaces that support it.
+
+!! include-figure example-ietf-interfaces.yang extract-to="example-ietf-interfaces@2017-06-27.yang"
+
+
+# * Open Issues @issues@
+#
+# + NETCONF needs to be able to filter data based on the origin
+#  metadata.  Possibly this could be done as part of the <get-data>
+#  operation.
+
+
+{{document:
+    name ;
+    ipr trust200902;
+    category std;
+    references references.xml;
+    title "Interface Properties for YANG Data Models";
+    contributor "editor:Robert Wilton:Cisco Systems:rwilton@cisco.com";
+}}
