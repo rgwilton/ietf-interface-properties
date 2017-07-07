@@ -129,14 +129,8 @@ module example-ietf-interfaces-common {
      */
     container encapsulation {
       when
-        "derived-from-or-self(../if:type,
-                              'ianaift:ethernetCsmacd') or
-         derived-from-or-self(../if:type,
-                              'ianaift:ieee8023adLag') or
-         derived-from-or-self(../if:type, 'ianaift:pos') or
-         derived-from-or-self(../if:type,
-                              'ianaift:atmSubInterface') or
-         derived-from-or-self(../if:type, 'ethSubInterface')" {
+        "derived-from-or-self(../if:type, 'ianaifp:ethernet-like') or
+         derived-from-or-self(../if:type, 'ianaifp:sub-interface')" {
 
         description
           "All interface types that can have a configurable L2

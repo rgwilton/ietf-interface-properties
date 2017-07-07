@@ -72,7 +72,7 @@ module iana-if-property-type {
       "This property represents an interface that is always
        point-to-point, i.e. the interface can only ever be connected
        to a single other interface, and hence broadcast and multicast
-       packet statistics don't make sense.";
+       packet statistics do not make sense.";
   }
 
   identity multicast {

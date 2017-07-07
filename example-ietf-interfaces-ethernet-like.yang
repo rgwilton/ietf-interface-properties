@@ -39,7 +39,10 @@ module example-ietf-interfaces-ethernet-like {
     "Example for when statements using interface properties.";
 
   revision 2017-06-27 {
-    description "Updated reference to new internet draft name.";
+    description
+      "Examples of using when statements with interface properties";
+
+    reference "Internet draft: draft-ietf-netmod-intf-ext-yang-04";
   }
 
   /*

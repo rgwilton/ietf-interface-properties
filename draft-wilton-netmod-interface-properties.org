@@ -21,25 +21,26 @@ property identities (a backwards compatible change).  Interface based
 YANG schema nodes can then be made conditional on the interface
 property identities rather than being conditional on a hardcoded set
 of IANA interface types.  This approach also allows newly defined
-interfaces types to reuse published standard interface YANG schema
+interface types to reuse published standard interface YANG schema
 nodes just by deriving from the appropriate interface property
 identities, and without requiring new revisions of those published
 standard YANG modules each time a new IANA interface type is defined.
 
 * Terminology
 
+
 This document defines the following terms:
 
 - interface property identity: A YANG identity that defines a
   particular generic interface related property that generally relates
-  to multiple interface types identities defined in
+  to multiple interface type identities defined in
   iana-interface-type.yang.  An example of such a property is
   'Ethernet-like'.
 
 * Problem Definition
 
 The YANG language offers the "when" statement that can be used to make
-nodes conditional on some particular condition.
+nodes conditional on some particular X-Path expression.
 
 In the case, of interface related configuration, the when statement
 can be used to explicitly list all the iana-interface-type
@@ -57,16 +58,17 @@ However, the current solution is not ideal for several reasons:
   model cannot easily be extended to handle new interface types.  If a
   new interface type is introduced then to reuse the same interface
   related schema nodes requires that all of the applicable model when
-  statements must be updated to reference the new IANA interfae type
+  statements must be updated to reference the new IANA interface type
   identity.
 
-- The current solution doesn't really work for any bespoke vendor
+- The current solution does not really work for bespoke vendor
   specific interface types.  Even though the proprietrary interface
   types may be defined in the IANA interface type identity list, it is
   unlikely that it would be acceptable to update a standards based
   YANG model to reference a proprietrary interface type.  Requiring
-  bespoke interfaces to use separate simiilar leaves makes the models
-  less generic and more tedious to use by clients.
+  bespoke interfaces to use separate similar configuration and state
+  nodes makes the models less generic and more tedious to use by
+  clients.
 
 * Interface Property Identities
 
@@ -100,8 +102,7 @@ again in a backwards compatible way.
 
 * Potential issues and considerations:
 
-- Would IANA be willing to manage the new interface property types,
-  and allow the interface types to be extended?
+- Would IANA be willing to manage the new interface property types?
 
 - iana-interface-types.yang would need to be YANG 1.1.  Would this
   be an issue?
@@ -109,8 +110,8 @@ again in a backwards compatible way.
 - Need to define a suitable set of base interface properties.
 
 - Need to then apply the set of base interface properties to
-  appropriate interface types.  Coordination between vendors will
-  likely be required to get a reasonable coverage.
+  appropriate interface types.  Coordination between vendors may
+  be required to get a reasonable base coverage.
 
 * YANG Modules @yang-module@
 
@@ -118,8 +119,8 @@ again in a backwards compatible way.
 
 * IANA Considerations @iana-con@
 
-This draft proposes that IANA also manage a new registry of "interface
- properties" alongside the existing "interface type" registry, and to
+This draft proposes that IANA also manage a new registry of 
+"interface properties" alongside the existing "interface type" registry, and to
  extend the "interface type" registry to also derive from interface
  properties identities.
 
